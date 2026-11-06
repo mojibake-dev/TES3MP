@@ -42,6 +42,12 @@ bool PlayerProcessor::Process(RakNet::Packet &packet)
             {
                 myPacket->setPlayer(player);
                 myPacket->Read();
+
+                if (!myPacket->isPacketValid())
+                {
+                    LOG_MESSAGE_SIMPLE(TimedLog::LOG_ERROR, "Received %s that failed integrity check and was ignored!", processor.second->strPacketID.c_str());
+                    return true;
+                }
             }
 
             processor.second->Do(*myPacket, player);
