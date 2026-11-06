@@ -12,6 +12,10 @@ namespace mwmp
 
         virtual void Packet(RakNet::BitStream *newBitstream, bool send);
         void ExchangeItemInformation(Item &item, bool send);
+
+    protected:
+        // Matches BasePlayer::equipmentItems and MWWorld::InventoryStore::Slots
+        static const int maxEquipmentSlots = 19;
     };
 }
 
