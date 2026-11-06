@@ -24,6 +24,12 @@ namespace mwmp
     protected:
         BasePlayer *player;
 
+        // Upper bound for the element counts these packets read off the wire,
+        // which are otherwise passed straight to resize(). Set well above any
+        // count a client legitimately sends, so this rejects abuse rather than
+        // describing a protocol limit. Matches the existing maxItems bound in
+        // PacketRecordDynamic.
+        const static uint32_t maxChangeCount = 1000;
     };
 }
 
