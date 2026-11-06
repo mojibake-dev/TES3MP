@@ -1,3 +1,5 @@
+#include <exception>
+
 #include "PlayerProcessor.hpp"
 #include "Networking.hpp"
 
@@ -16,8 +18,16 @@ bool PlayerProcessor::Process(RakNet::Packet &packet) noexcept
             PlayerPacket *myPacket = Networking::get().getPlayerPacketController()->GetPacket(packet.data[0]);
             myPacket->setPlayer(player);
 
-            if (!processor.second->avoidReading)
-                myPacket->Read();
+            try
+            {
+                if (!processor.second->avoidReading)
+                    myPacket->Read();
+            }
+            catch (const std::exception &e)
+            {
+                LOG_MESSAGE_SIMPLE(TimedLog::LOG_ERROR, "Failed to read %s: %s", processor.second->strPacketID.c_str(), e.what());
+                return true;
+            }
 
             processor.second->Do(*myPacket, *player);
             return true;
