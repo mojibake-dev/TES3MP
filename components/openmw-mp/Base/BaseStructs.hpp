@@ -73,9 +73,9 @@ namespace mwmp
     struct Item
     {
         std::string refId;
-        int count;
-        int charge;
-        float enchantmentCharge;
+        int count = 0;
+        int charge = -1;
+        float enchantmentCharge = -1;
         std::string soul;
 
         inline bool operator==(const Item& rhs)
