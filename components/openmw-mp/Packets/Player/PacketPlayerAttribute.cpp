@@ -22,12 +22,18 @@ void PacketPlayerAttribute::Packet(RakNet::BitStream *newBitstream, bool send)
     }
     else
     {
-        uint32_t count;
+        uint32_t count = 0;
 
         if (send)
             count = static_cast<uint32_t>(player->attributeIndexChanges.size());
 
         RW(count, send);
+
+        if (count > maxChangeCount)
+        {
+            packetValid = false;
+            return;
+        }
 
         if (!send)
         {

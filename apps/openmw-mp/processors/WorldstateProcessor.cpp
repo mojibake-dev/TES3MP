@@ -1,3 +1,5 @@
+#include <exception>
+
 #include "WorldstateProcessor.hpp"
 #include "Networking.hpp"
 
@@ -25,8 +27,16 @@ bool WorldstateProcessor::Process(RakNet::Packet &packet, BaseWorldstate &worlds
             myPacket->setWorldstate(&worldstate);
             worldstate.isValid = true;
 
-            if (!processor.second->avoidReading)
-                myPacket->Read();
+            try
+            {
+                if (!processor.second->avoidReading)
+                    myPacket->Read();
+            }
+            catch (const std::exception &e)
+            {
+                LOG_MESSAGE_SIMPLE(TimedLog::LOG_ERROR, "Failed to read %s: %s", processor.second->strPacketID.c_str(), e.what());
+                return true;
+            }
 
             if (worldstate.isValid)
                 processor.second->Do(*myPacket, *player, worldstate);

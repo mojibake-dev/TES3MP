@@ -1,3 +1,5 @@
+#include <exception>
+
 #include "ActorProcessor.hpp"
 #include "Networking.hpp"
 
@@ -28,8 +30,16 @@ bool ActorProcessor::Process(RakNet::Packet &packet, BaseActorList &actorList) n
             myPacket->setActorList(&actorList);
             actorList.isValid = true;
 
-            if (!processor.second->avoidReading)
-                myPacket->Read();
+            try
+            {
+                if (!processor.second->avoidReading)
+                    myPacket->Read();
+            }
+            catch (const std::exception &e)
+            {
+                LOG_MESSAGE_SIMPLE(TimedLog::LOG_ERROR, "Failed to read %s: %s", processor.second->strPacketID.c_str(), e.what());
+                return true;
+            }
 
             if (actorList.isValid)
                 processor.second->Do(*myPacket, *player, actorList);

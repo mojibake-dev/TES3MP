@@ -1,3 +1,5 @@
+#include <exception>
+
 #include "ObjectProcessor.hpp"
 #include "Networking.hpp"
 
@@ -28,8 +30,16 @@ bool ObjectProcessor::Process(RakNet::Packet &packet, BaseObjectList &objectList
             myPacket->setObjectList(&objectList);
             objectList.isValid = true;
 
-            if (!processor.second->avoidReading)
-                myPacket->Read();
+            try
+            {
+                if (!processor.second->avoidReading)
+                    myPacket->Read();
+            }
+            catch (const std::exception &e)
+            {
+                LOG_MESSAGE_SIMPLE(TimedLog::LOG_ERROR, "Failed to read %s: %s", processor.second->strPacketID.c_str(), e.what());
+                return true;
+            }
 
             if (objectList.isValid)
                 processor.second->Do(*myPacket, *player, objectList);
