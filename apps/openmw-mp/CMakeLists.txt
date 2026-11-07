@@ -194,6 +194,8 @@ if (UNIX)
     endif(NOT APPLE)
 endif(UNIX)
 
+harden_target_links(tes3mp-server)
+
 if (BUILD_WITH_CODE_COVERAGE)
   add_definitions (--coverage)
   target_link_libraries(tes3mp-server gcov)

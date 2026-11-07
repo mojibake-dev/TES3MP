@@ -35,6 +35,7 @@ option(BUILD_BENCHMARKS         "Build benchmarks with Google Benchmark" OFF)
 option(BUILD_OPENMW_MP          "Build OpenMW-MP" ON)
 option(BUILD_BROWSER            "Build tes3mp Server Browser" ON)
 option(BUILD_MASTER             "Build tes3mp Master Server" OFF)
+option(OPENMW_HARDENING         "Enable compiler and linker hardening" OFF)
 
 set(OpenGL_GL_PREFERENCE LEGACY)  # Use LEGACY as we use GL2; GLNVD is for GL3 and up.
 
@@ -105,6 +106,7 @@ endif(EXISTS ${PROJECT_SOURCE_DIR}/.git)
 # Macros
 include(OpenMWMacros)
 include(WholeArchive)
+include(Hardening)
 
 # doxygen main page
 
@@ -593,6 +595,17 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR CMAKE_CXX_COMPILER_ID STREQUAL Clang)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-but-set-parameter")
     endif()
 endif (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+
+if (OPENMW_HARDENING)
+    # Applied here, before components and the apps are added, so that every
+    # object that ends up in a binary is built the same way. See
+    # cmake/Hardening.cmake for why this is not scoped to a single target.
+    get_hardening_compile_options(OPENMW_HARDENING_COMPILE_OPTIONS)
+    if (OPENMW_HARDENING_COMPILE_OPTIONS)
+        message(STATUS "Hardening enabled: ${OPENMW_HARDENING_COMPILE_OPTIONS}")
+        add_compile_options(${OPENMW_HARDENING_COMPILE_OPTIONS})
+    endif()
+endif()
 
 # Extern
 # Start of tes3mp addition
