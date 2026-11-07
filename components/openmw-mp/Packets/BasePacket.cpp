@@ -11,6 +11,7 @@ BasePacket::BasePacket(RakNet::RakPeerInterface *peer)
     priority = HIGH_PRIORITY;
     reliability = RELIABLE_ORDERED;
     orderChannel = CHANNEL_SYSTEM;
+    packetValid = true;
     this->peer = peer;
 }
 

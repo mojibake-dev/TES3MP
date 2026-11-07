@@ -19,7 +19,11 @@ bool PlayerProcessor::Process(RakNet::Packet &packet) noexcept
             if (!processor.second->avoidReading)
                 myPacket->Read();
 
-            processor.second->Do(*myPacket, *player);
+            if (myPacket->isPacketValid())
+                processor.second->Do(*myPacket, *player);
+            else
+                LOG_MESSAGE_SIMPLE(TimedLog::LOG_ERROR, "Received %s that failed integrity check and was ignored!", processor.second->strPacketID.c_str());
+
             return true;
         }
     }

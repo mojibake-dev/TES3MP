@@ -24,11 +24,17 @@ void PacketPlayerEquipment::Packet(RakNet::BitStream *newBitstream, bool send)
     }
     else
     {
-        uint32_t count;
+        uint32_t count = 0;
         if (send)
             count = static_cast<uint32_t>(player->equipmentIndexChanges.size());
 
         RW(count, send);
+
+        if (count > maxEquipmentSlots)
+        {
+            packetValid = false;
+            return;
+        }
 
         if (!send)
         {
@@ -39,6 +45,13 @@ void PacketPlayerEquipment::Packet(RakNet::BitStream *newBitstream, bool send)
         for (auto &&equipmentIndex : player->equipmentIndexChanges)
         {
             RW(equipmentIndex, send);
+
+            if (equipmentIndex < 0 || equipmentIndex >= maxEquipmentSlots)
+            {
+                packetValid = false;
+                return;
+            }
+
             ExchangeItemInformation(player->equipmentItems[equipmentIndex], send);
         }
     }
